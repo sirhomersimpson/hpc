@@ -1,0 +1,5 @@
+oci_cn_auth_version: "2.0.15"
+oci_hpc_mlx_configure_version: "2.1.1"
+oci_hpc_rdma_configure_version: "2.1.3"
+oci_hpc_network_device_names_version: "1.0.3"
+oci_hpc_dapl_configure_version: "2.0.2"

@@ -1,0 +1,25 @@
+---
+- name: create nccl-test directory
+  file:
+    path: "{{ benchmark_base_path }}/nccl-test"
+    state: directory
+    mode: 0755
+    owner: opc
+    group: opc
+  become: yes
+
+- name: clone NCCL test
+  git:
+    repo: "{{ nccltest_repo }}"
+    dest: "{{ benchmark_base_path }}/nccl-test"
+    force: yes
+  become_user: opc
+
+- name: build NCCL test
+  shell: |
+    . /etc/profile.d/modules.sh
+    module load hpcx/{{ mellanox_hpcx_version }}/hpcx-ompi
+    module list
+    make MPI=1 CUDA_HOME=/usr/local/cuda -j
+  args:
+    chdir: "{{ benchmark_base_path }}/nccl-test"

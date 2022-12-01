@@ -1,0 +1,75 @@
+- hosts: all
+  any_errors_fatal: yes
+  become: true
+
+# options:
+#   rhck - For OraceLinux install RedHat Compatiable Kernel
+#   upgrade - Upgrade all packages to the latest
+#   nomitigations - Disable all security mitigations
+#   noselinux - Disable SELinux
+#   nvidia - Install NVIDIA GPU drivers and software
+#   monitoring - Install NVIDIA DCGM
+#   benchmarks - Install benchmarks
+#   intel-oneapi - Install Intel OneAPI MPI/MKL
+#   openmpi - Install OpenMPI against system gcc
+
+# groups:
+#   groups define the variables (group_vars) to use with the roles
+
+  tasks:
+    - import_role:
+        name: ssh
+    - import_role:
+        name: kernel-parameters
+    - import_role:
+        name: kernel-limits
+    - import_role:
+        name: kernel-rhck
+    - import_role:
+        name: packages
+    - import_role:
+        name: oci-utils
+    - import_role:
+        name: oci-cloud-agent
+    - import_role:
+        name: nozeroconf
+    - import_role:
+        name: mellanox-ofed
+    - import_role:
+        name: oci-hpc-packages
+    - import_role:
+        name: tuned
+    - import_role:
+        name: disable-selinux
+      when: "'noselinux' in options"
+    - import_role:
+        name: mellanox-hpcx
+    - import_role:
+        name: intel-oneapi
+      when: "'intel-oneapi' in options"
+    - import_role:
+        name: openmpi-gcc
+      when: "'openmpi' in options"
+    - import_role:
+        name: nvidia-driver
+      when: "'nvidia' in options"
+    - import_role:
+        name: nvidia-gpu-boost-clock
+      when: "'nvidia' in options"
+    - import_role:
+        name: nvidia-cuda
+      when: "'nvidia' in options"
+    - import_role:
+        name: nvidia-cudnn
+      when: "'nvidia' in options"
+    - import_role:
+        name: nvidia-nccl
+      when: "'nvidia' in options"
+    - import_role:
+        name: nvidia-dcgm
+      when: "'nvidia' in options and 'monitoring' in options"
+    - import_role:
+        name: hpc-benchmarks
+      when: "'nvidia' in options and 'benchmarks' in options"
+    - import_role:
+        name: systemd

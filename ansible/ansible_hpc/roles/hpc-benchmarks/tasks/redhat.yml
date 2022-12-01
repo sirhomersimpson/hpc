@@ -1,0 +1,8 @@
+---
+- name: install dependencies
+  yum:
+    name:
+      - git
+      - pciutils
+      - pciutils-devel
+  become: yes

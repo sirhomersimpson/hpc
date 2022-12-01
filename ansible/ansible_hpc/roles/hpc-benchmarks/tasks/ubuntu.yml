@@ -1,0 +1,8 @@
+---
+- name: install dependencies
+  apt:
+    name:
+      - git
+      - pciutils
+      - libpci-dev
+  become: yes

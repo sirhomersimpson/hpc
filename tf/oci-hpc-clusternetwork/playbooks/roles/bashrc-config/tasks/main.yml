@@ -1,0 +1,9 @@
+---
+- name: Add mpirun variables in bashrc (OL/RHEL)
+  lineinfile:
+    path: /home/opc/.bashrc
+    line: '{{ item }}'
+  with_items:
+    - "source /usr/mpi/gcc/openmpi-*/bin/mpivars.sh 2>/dev/null"
+#    - "source /opt/openmpi-*/bin/mpivars.sh 2>/dev/null"
+  when: ansible_os_family == 'RedHat'

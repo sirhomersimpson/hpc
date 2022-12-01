@@ -1,0 +1,22 @@
+--- 
+- name: Ensure oci-gpu-boost-clock script is installed
+  copy:
+    src: oci-gpu-boost-clock.sh
+    dest: /usr/local/bin/oci-gpu-boost-clock.sh
+    owner: root
+    group: root
+    mode: 0744
+
+- name: Ensure oci-gpu-boost-clock.service is installed
+  copy:
+    src: oci-gpu-boost-clock.service
+    dest: /etc/systemd/system/oci-gpu-boost-clock.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable oci-gpu-boost-clock service
+  systemd:
+    daemon_reload: yes
+    name: oci-gpu-boost-clock
+    enabled: yes

@@ -1,0 +1,17 @@
+---
+- name: install dependencies
+  include_tasks: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: install dependencies
+  include_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: install NCCL test
+  include_tasks: nccl-test.yml
+
+- name: install GPUDirect-aware perftest
+  include_tasks: perftest.yml
+
+- name: install gpuburn
+  include_tasks: gpuburn.yml

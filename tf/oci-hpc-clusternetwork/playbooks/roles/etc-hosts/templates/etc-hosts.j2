@@ -1,0 +1,4 @@
+{% for item in groups['compute'] %}
+{% set short_name = hostvars[item]['ansible_fqdn'].split('.') %}
+{{ hostvars[item]['ansible_host'] }}  {{ hostvars[item]['ansible_fqdn'] }} {{ short_name[0] }} hpc-node-{{ loop.index }}
+{% endfor %}

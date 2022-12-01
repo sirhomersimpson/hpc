@@ -1,0 +1,8 @@
+---
+- name: OCI Rdma Configure
+  block:
+    - name: Enable oci-rdma-configure (HPC)
+      systemd:
+        name: oci-rdma-configure
+        enabled: yes
+        state: started

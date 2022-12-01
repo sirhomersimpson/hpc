@@ -1,0 +1,22 @@
+- hosts: compute
+  become: true
+  vars:
+    initial: true
+  gather_facts: true
+  roles:
+    - hostname
+
+- hosts: all
+  become: true
+  vars:
+    destroy: false
+    initial: true
+  gather_facts: true
+  roles:
+    - ssh
+    - packages
+    - copy-keys
+    - etc-hosts
+    - disable-firewall
+    - bashrc-config
+    - rdma-configure

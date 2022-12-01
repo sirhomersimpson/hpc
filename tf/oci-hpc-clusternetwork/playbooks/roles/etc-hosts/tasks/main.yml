@@ -1,0 +1,60 @@
+---
+- name: create bastion part of the /etc/hosts files for the compute nodes
+  blockinfile:
+    dest: /tmp/hosts.etc.{{ cluster_name }}
+    content: "{{ lookup('template', 'templates/etc-hosts-bastion.j2') }}"
+    state: present
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK BASTION"
+  delegate_to: 127.0.0.1
+  run_once: true
+
+
+- name: create bastion part of the /etc/hosts files for the bastion
+  blockinfile:
+    dest: /etc/hosts
+    content: "{{ lookup('template', 'templates/etc-hosts-bastion.j2') }}"
+    state: present
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK BASTION"
+  delegate_to: 127.0.0.1
+  run_once: true
+
+
+- name: add cn nodes to the /tmp/hosts.etc file for the compute nodes
+  blockinfile:
+    dest: /tmp/hosts.etc.{{ cluster_name }}
+    content: "{{ lookup('template', 'templates/etc-hosts.j2') }}"
+    state: present
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED CN_STEP1 BLOCK {{ cluster_name }}"
+  delegate_to: 127.0.0.1
+  run_once: true
+
+
+- name: add cluster nodes to the /etc/hosts file of the bastion
+  blockinfile:
+    dest: /etc/hosts
+    content: "{{ lookup('template', 'templates/etc-hosts.j2') }}"
+    state: present
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED CN_STEP2 BLOCK {{ cluster_name }}"
+  delegate_to: 127.0.0.1
+  run_once: true
+
+- name: cp /etc/hosts.etc to all compute nodes
+  become: true
+  copy:
+    dest: /tmp/hosts.etc.{{ cluster_name }}
+    src: /tmp/hosts.etc.{{ cluster_name }}
+    force: yes
+
+
+- name: create a full /etc/hosts in the compute nodes
+  blockinfile:
+    dest: /etc/hosts
+    content: "{{ lookup('file', '/tmp/hosts.etc.'+cluster_name) }}"
+    state: present
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED CN_STEP3 BLOCK {{ cluster_name }}"
+  when: ('compute' in group_names)

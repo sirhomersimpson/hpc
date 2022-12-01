@@ -1,0 +1,26 @@
+---
+- name: oci-dr-hpc (OL) - download package
+  get_url:
+    url: "{{ hpc_artifacts_download }}/oci-dr-hpc-{{ oci_dr_hpc_version }}-compute.el7.noarch.rpm"
+    dest: /tmp/oci-dr-hpc-{{ oci_dr_hpc_version }}-compute.el7.noarch.rpm
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '7'
+
+
+- name: oci-dr-hpc (OL) - install package
+  yum:
+    name: /tmp/oci-dr-hpc-{{ oci_dr_hpc_version }}-compute.el7.noarch.rpm
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '7'
+
+- name: oci-dr-hpc - remove package (disabled by default)
+  yum:
+    name: oci-dr-hpc
+    state: absent
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '7'
+    - 0 > 1

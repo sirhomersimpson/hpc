@@ -1,0 +1,18 @@
+---
+- name: Copy over keys and ssh_config (OL/RHEL)
+  block:
+    - name: Copy private key to compute nodes (OL/RHEL)
+      copy:
+        src: /home/opc/.ssh/id_rsa
+        dest: /home/opc/.ssh/id_rsa
+
+    - name: Copy public key to compute nodes (OL/RHEL)
+      copy:
+        src: /home/opc/.ssh/id_rsa.pub
+        dest: /home/opc/.ssh/id_rsa.pub
+
+    - name: Copy ssh_config (OL/RHEL)
+      copy:
+        src: /home/opc/.ssh/config
+        dest: /home/opc/.ssh/config
+  when: ansible_os_family == 'RedHat'

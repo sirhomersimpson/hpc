@@ -1,0 +1,6 @@
+---
+# tasks file for hello-world-role
+
+- name: Hello world message
+  ansible.builtin.debug:
+    msg: Hello dude and dudettes

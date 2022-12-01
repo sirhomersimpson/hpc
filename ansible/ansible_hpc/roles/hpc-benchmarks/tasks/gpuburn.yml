@@ -1,0 +1,23 @@
+---
+- name: create gpuburn directory
+  file:
+    path: "{{ benchmark_base_path }}/gpuburn"
+    state: directory
+    mode: 0755
+    owner: opc
+    group: opc
+  become: yes
+
+- name: clone gpuburn from repo
+  git:
+    repo: "{{ gpuburn_repo }}"
+    dest: "{{ benchmark_base_path }}/gpuburn"
+    force: yes
+  become_user: opc
+
+- name: build gpuburn
+  make:
+    chdir: "{{ benchmark_base_path }}/gpuburn"
+    params:
+      COMPUTE: 80
+#    jobs: 4

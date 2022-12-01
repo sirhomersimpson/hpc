@@ -1,0 +1,66 @@
+---
+- name: Build list of kernel boot parameters
+  set_fact:
+    kernel_parameters: "{{ grub_cmdline
+       + (('nomitigations' in options) | ternary(grub_cmdline_disable_mitigations, []))
+       + (('noselinux' in options) | ternary(['selinux=0'], []))
+       + (('enroot' in options) | ternary(grub_cmdline_enroot, []))
+       + (('networkdevicenames' in options) | ternary(grub_cmdline_network_device_names, [])) }}"
+  when:
+    - "options is defined"
+    - grub_cmdline is defined
+
+- name: Kernel boot parameters for RedHat 7
+  block:
+
+  - name: Ensure kernel boot parameters are setup for RedHat 7
+    lineinfile:
+      path: /etc/default/grub
+      backrefs: yes
+      regexp: '^(GRUB_CMDLINE_LINUX="(?!.*\b{{ item }}\b).*)"$'
+      line: '\1 {{ item }}"'
+    notify:
+      - grub2-mkconfig
+    loop: "{{ kernel_parameters }}"
+    when:
+      - kernel_parameters is defined
+
+  when:
+   - ansible_os_family == 'RedHat'
+   - ansible_distribution_major_version == '7'
+
+
+- name: Kernel boot parameters for Ubuntu 20
+  block:
+
+  - name: Ensure base kernel boot parameter file exists
+    copy:
+      src: 70-oci-hpc.cfg
+      dest: /etc/default/grub.d/70-oci-hpc.cfg
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Ensure kernel boot parameters are setup for Ubuntu 20
+    lineinfile:
+      path: /etc/default/grub.d/70-oci-hpc.cfg
+      backrefs: yes
+      regexp: '^(GRUB_CMDLINE_LINUX="\$GRUB_CMDLINE_LINUX(?!.*\b{{ item }}\b).*)"$'
+      line: '\1 {{ item }}"'
+      create: yes
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - update-grub
+    loop: "{{ kernel_parameters }}"
+    when:
+      - kernel_parameters is defined
+
+  when:
+   - ansible_distribution == 'Ubuntu'
+   - ansible_distribution_major_version == '20'
+
+
+- name: Flush handlers to update grub
+  meta: flush_handlers

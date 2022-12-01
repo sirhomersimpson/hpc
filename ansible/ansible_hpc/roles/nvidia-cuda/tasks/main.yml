@@ -1,0 +1,33 @@
+---
+- name: NVIDIA Cuda for RHEL 7
+  block:
+
+    - name: Install cuda toolkit for RHEL 7
+      yum:
+        name:
+          - "{{ cuda_toolkit_version }}"
+        state: present
+      environment: "{{ proxy_env if proxy_env is defined else {} }}"
+
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '7'
+
+
+- name: NVIDIA CUDA for Ubuntu 20
+  block:
+
+    - name: Add repository
+      apt_repository:
+        repo: "deb {{ nvidia_driver_ubuntu_cuda_repo_baseurl }} /"
+        update_cache: yes
+      environment: "{{proxy_env if proxy_env is defined else {}}}"
+
+    - name: Install cuda toolkit for Ubuntu 20
+      apt:
+        name: "{{ cuda_toolkit_version }}"
+      environment: "{{proxy_env if proxy_env is defined else {}}}"
+
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_major_version == '20'
